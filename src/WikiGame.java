@@ -85,8 +85,6 @@ public class WikiGame implements ActionListener {
                 Matcher colonMatcher;
                 Pattern footerPat = Pattern.compile("footer");
                 Matcher footerMatcher;
-                Pattern hashPat = Pattern.compile("#");
-                Matcher hashMatcher;
 
                 String subline;
                 while ( (line = reader.readLine()) != null ) {
@@ -109,8 +107,7 @@ public class WikiGame implements ActionListener {
                             wikiMatcher = wikipat.matcher(subline);
                             wikiMediaMatcher = wikiMediaPat.matcher(subline);
                             footerMatcher = footerPat.matcher(subline);
-                            hashMatcher = hashPat.matcher(subline);
-                            if (wikiMatcher.find() == true && wikiMediaMatcher.find() == false && colonMatcher.find() == false && footerMatcher.find() == false && hashMatcher.find() == false && subline != "https://en.wikipedia.org/wiki/Main_Page" && subline != "https://en.wikipedia.org/wiki/Special:Search") {
+                            if (wikiMatcher.find() == true && wikiMediaMatcher.find() == false && colonMatcher.find() == false && footerMatcher.find() == false && subline != "https://en.wikipedia.org/wiki/Main_Page" && subline != "https://en.wikipedia.org/wiki/Special:Search") {
                                 queue.add(subline);
                             }
 
@@ -119,12 +116,12 @@ public class WikiGame implements ActionListener {
                                 
                                 System.out.println("path: " + path);
                                 System.out.println("depth: " + depth);
-                                System.out.println("SUCCESS!!!");
+                                System.out.println("SUCCESS!!");
 
                                 queue.clear();
                                 queue.add(subline);
 
-                                reader.close();
+//                                reader.close();
                             }
                         }
 
@@ -198,7 +195,7 @@ public class WikiGame implements ActionListener {
         ta.setBounds(50, 5, WIDTH-100, HEIGHT-25);
         textPanel1.add(ta, BorderLayout.CENTER);
 
-        tb = new JTextField("Semantic_search"); /* create new text area */
+        tb = new JTextField("World_Wide_Web"); /* create new text area */
         tb.setBounds(50, 35, WIDTH-100, HEIGHT-25);
         textPanel2.add(tb, BorderLayout.CENTER);
 

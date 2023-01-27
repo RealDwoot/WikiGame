@@ -85,6 +85,8 @@ public class WikiGame implements ActionListener {
                 Matcher colonMatcher;
                 Pattern footerPat = Pattern.compile("footer");
                 Matcher footerMatcher;
+                Pattern hashPat = Pattern.compile("#");
+                Matcher hashMatcher;
 
                 String subline;
                 while ( (line = reader.readLine()) != null ) {
@@ -107,7 +109,8 @@ public class WikiGame implements ActionListener {
                             wikiMatcher = wikipat.matcher(subline);
                             wikiMediaMatcher = wikiMediaPat.matcher(subline);
                             footerMatcher = footerPat.matcher(subline);
-                            if (wikiMatcher.find() == true && wikiMediaMatcher.find() == false && colonMatcher.find() == false && footerMatcher.find() == false && subline != "https://en.wikipedia.org/wiki/Main_Page" && subline != "https://en.wikipedia.org/wiki/Special:Search") {
+                            hashMatcher = hashPat.matcher(subline);
+                            if (wikiMatcher.find() == true && wikiMediaMatcher.find() == false && colonMatcher.find() == false && footerMatcher.find() == false && hashMatcher.find() == false && subline != "https://en.wikipedia.org/wiki/Main_Page" && subline != "https://en.wikipedia.org/wiki/Special:Search") {
                                 queue.add(subline);
                             }
 
@@ -121,7 +124,7 @@ public class WikiGame implements ActionListener {
                                 queue.clear();
                                 queue.add(subline);
 
-//                                reader.close();
+                                reader.close();
                             }
                         }
 

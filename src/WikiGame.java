@@ -45,8 +45,11 @@ public class WikiGame implements ActionListener {
     }
 
     public String HtmlRead(String url1 , String url2) {
+        url1 = "https://en.wikipedia.org/wiki/" + url1;
+        url2 = "https://en.wikipedia.org/wiki/" + url2;
+
         try {
-            System.out.println("test1");
+//            System.out.println("test1");
 
             URL newURL;
             String depth = null;
@@ -61,9 +64,11 @@ public class WikiGame implements ActionListener {
 
             int i = 0;
             while(queue.get(i) != null) {
-                System.out.println(queue.size());
-                System.out.println("test2");
+                System.out.println("queue size: " + queue.size());
+                System.out.println("depth: " + i);
+                System.out.println("current link: "+ queue.get(i) + "\n");
 
+                path.add(queue.get(i));
                 newURL = new URL(queue.get(i));
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(newURL.openStream())
@@ -72,52 +77,68 @@ public class WikiGame implements ActionListener {
 
                 Pattern pat = Pattern.compile("a href=");
                 Matcher lineMatcher;
+                Pattern wikipat = Pattern.compile("/wiki/");
+                Matcher wikiMatcher;
+                Pattern wikiMediaPat = Pattern.compile("wikimedia.org");
+                Matcher wikiMediaMatcher;
+                Pattern colonPat = Pattern.compile(":");
+                Matcher colonMatcher;
+                Pattern footerPat = Pattern.compile("footer");
+                Matcher footerMatcher;
+
                 String subline;
-                String subline2;
                 while ( (line = reader.readLine()) != null ) {
                     if (queue.get(0) != null) {
-                        System.out.println("good");
                     }
-                    System.out.println("test3");
-                    System.out.println(line);
 
                         lineMatcher = pat.matcher(line);
                         if (lineMatcher.find() == true) {
-                            System.out.println("test4");
-                            System.out.println(queue.get(0));
-                            System.out.println(line);
+//                            System.out.println("queuesub:" + queue.get(0));
 
-                            subline = line.substring(line.indexOf("a href=\"https:") + 8);
-                            System.out.println(subline);
-                            subline = subline.substring(0, subline.indexOf("\""));
-                            System.out.println(subline);
-                            queue.add(subline);
+                            int index1 = line.indexOf("\"");
 
-                            subline2 = line.substring(line.indexOf("\">") + 2, subline.indexOf("<"));
-                            path.add(subline2);
+                            subline = line.substring(line.indexOf("\"") );
+                            subline = line.substring(line.indexOf("\"") + 1, line.indexOf("\"", index1 + 1));
+                            colonMatcher = colonPat.matcher(subline);
 
-                            if (subline == url2) {
-                                System.out.println("test7");
+                            subline = "https://en.wikipedia.org" + subline;
+//                            System.out.println("subline:" + subline);
+
+                            wikiMatcher = wikipat.matcher(subline);
+                            wikiMediaMatcher = wikiMediaPat.matcher(subline);
+                            footerMatcher = footerPat.matcher(subline);
+                            if (wikiMatcher.find() == true && wikiMediaMatcher.find() == false && colonMatcher.find() == false && footerMatcher.find() == false && subline != "https://en.wikipedia.org/wiki/Main_Page" && subline != "https://en.wikipedia.org/wiki/Special:Search") {
+                                queue.add(subline);
+                            }
+
+                            if (subline.equals(url2)) {
                                 depth = String.format("%d", i);
-                                reader.close();
-                                System.out.println("break");
+                                
+                                System.out.println("path: " + path);
+                                System.out.println("depth: " + depth);
+                                System.out.println("SUCCESS!!!");
+
                                 queue.clear();
+                                queue.add(subline);
+
+//                                reader.close();
                             }
                         }
 
                 }
-                System.out.println(queue.size());
                 queue.remove(0);
                 i++;
 
             }
 
-            output.add(depth);
-            output.addAll(path);
-            for(int z = 0; z < output.size(); z++) {
-                outputString = outputString + output.get(z) + "\n";
-            }
-            return outputString;
+            //for some reason the below code doesn't work :( the function won't return anything at all
+
+//            output.add(depth);
+//            output.addAll(path);
+//            for(int z = 0; z < output.size(); z++) {
+//                outputString = outputString + output.get(z) + "\n";
+//            }
+//            return outputString;
 
         } catch(Exception ex) {
             System.out.println(ex);
@@ -170,12 +191,11 @@ public class WikiGame implements ActionListener {
         /* change layout to: url and search term boxes on the top left,
         submit and cancel buttons on top right, results at the bottom */
 
-        ta = new JTextField("https://en.wikipedia.org/wiki/URL"); /* create new text area */
+        ta = new JTextField("URL"); /* create new text area */
         ta.setBounds(50, 5, WIDTH-100, HEIGHT-25);
-
         textPanel1.add(ta, BorderLayout.CENTER);
 
-        tb = new JTextField("https://en.wikipedia.org/wiki/World_Wide_Web"); /* create new text area */
+        tb = new JTextField("Semantic_search"); /* create new text area */
         tb.setBounds(50, 35, WIDTH-100, HEIGHT-25);
         textPanel2.add(tb, BorderLayout.CENTER);
 
@@ -261,9 +281,10 @@ public class WikiGame implements ActionListener {
             if (command.equals("Submit")) {
                 statusLabel.setText("Submit Button clicked."); /* run code here */
                 outputArea.setText(HtmlRead(ta.getText(), tb.getText()) + blankArea);
+//                HtmlRead(ta.getText(), tb.getText());
                 outputArea.scrollRectToVisible(outputArea.getVisibleRect());
 
-                ta.setText("https://www.milton.edu/");
+                ta.setText("");
                 tb.setText("");
             } else {
                 statusLabel.setText("Cancel Button clicked."); /* delete all other code */
